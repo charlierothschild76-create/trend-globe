@@ -1,9 +1,8 @@
 import { useRef, useState, useMemo, useCallback } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
 import * as THREE from 'three'
-import { latLngToVector3, normalizeBubbleSize, formatVolume } from '../utils/sphereUtils'
-import { CATEGORY_COLORS, CATEGORY_LABELS } from '../utils/categoryDetector'
+import { latLngToVector3, normalizeBubbleSize } from '../utils/sphereUtils'
+import { CATEGORY_COLORS } from '../utils/categoryDetector'
 
 // Stable per-bubble seed so pulses are out of phase
 let _seed = 0
@@ -11,7 +10,7 @@ function useSeed() {
   return useMemo(() => (_seed += 1.3), [])
 }
 
-export default function TrendBubble({ trend, selected, onSelect }) {
+export default function TrendBubble({ trend, selected, onSelect, onHover }) {
   const meshRef  = useRef()
   const glowRef  = useRef()
   const [hovered, setHovered] = useState(false)
@@ -37,8 +36,9 @@ export default function TrendBubble({ trend, selected, onSelect }) {
     if (glowRef.current) glowRef.current.scale.setScalar(scale * 1.6)
   })
 
-  const handleOver  = useCallback((e) => { e.stopPropagation(); setHovered(true);  document.body.style.cursor = 'pointer' }, [])
-  const handleOut   = useCallback((e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'    }, [])
+  const handleOver  = useCallback((e) => { e.stopPropagation(); setHovered(true);  document.body.style.cursor = 'pointer'; onHover?.(trend, e.nativeEvent.clientX, e.nativeEvent.clientY) }, [trend, onHover])
+  const handleMove  = useCallback((e) => { if (hovered) onHover?.(trend, e.nativeEvent.clientX, e.nativeEvent.clientY) }, [hovered, trend, onHover])
+  const handleOut   = useCallback((e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; onHover?.(null) }, [onHover])
   const handleClick = useCallback((e) => { e.stopPropagation(); onSelect(trend) }, [trend, onSelect])
 
   return (
@@ -48,6 +48,7 @@ export default function TrendBubble({ trend, selected, onSelect }) {
         ref={meshRef}
         onPointerOver={handleOver}
         onPointerOut={handleOut}
+        onPointerMove={handleMove}
         onClick={handleClick}
       >
         <sphereGeometry args={[1, 14, 14]} />
@@ -74,30 +75,6 @@ export default function TrendBubble({ trend, selected, onSelect }) {
         />
       </mesh>
 
-      {/* Tooltip (always-facing HTML) */}
-      {(hovered || selected) && (
-        <Html
-          center
-          distanceFactor={6}
-          style={{ pointerEvents: 'none', userSelect: 'none' }}
-          zIndexRange={[100, 0]}
-        >
-          <div className={`bubble-tooltip ${selected ? 'selected' : ''}`}>
-            <div
-              className="tooltip-category"
-              style={{ color: CATEGORY_COLORS[trend.category] }}
-            >
-              {CATEGORY_LABELS[trend.category] ?? 'Other'} · {trend.source === 'google' ? 'Google Trends' : `r/${trend.subreddit ?? 'reddit'}`}
-            </div>
-            <div className="tooltip-title">{trend.title}</div>
-            <div className="tooltip-volume">
-              {trend.source === 'google' ? '🔍' : '⬆'} {formatVolume(trend.volume)}&nbsp;
-              {trend.source === 'google' ? 'searches' : 'upvotes'}
-            </div>
-            <div className="tooltip-geo">📍 {trend.geo.countryName}</div>
-          </div>
-        </Html>
-      )}
     </group>
   )
 }

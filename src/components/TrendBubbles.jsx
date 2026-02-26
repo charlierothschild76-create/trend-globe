@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import TrendBubble from './TrendBubble'
 
-export default function TrendBubbles({ trends, activeCategory, selectedTrend, onSelect }) {
+export default function TrendBubbles({ trends, activeCategory, selectedTrend, onSelect, onHover }) {
   const visible = useMemo(
     () => (activeCategory ? trends.filter((t) => t.category === activeCategory) : trends),
     [trends, activeCategory]
@@ -15,6 +15,7 @@ export default function TrendBubbles({ trends, activeCategory, selectedTrend, on
           trend={trend}
           selected={selectedTrend?.id === trend.id}
           onSelect={onSelect}
+          onHover={onHover}
         />
       ))}
     </>

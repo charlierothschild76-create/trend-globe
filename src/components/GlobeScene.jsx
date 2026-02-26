@@ -14,7 +14,7 @@ function RotatingGroup({ children, paused }) {
   return <group ref={groupRef}>{children}</group>
 }
 
-export default function GlobeScene({ trends, activeCategory, selectedTrend, onTrendSelect }) {
+export default function GlobeScene({ trends, activeCategory, selectedTrend, onTrendSelect, onHover }) {
   const [interacting, setInteracting] = useState(false)
 
   return (
@@ -40,6 +40,7 @@ export default function GlobeScene({ trends, activeCategory, selectedTrend, onTr
           activeCategory={activeCategory}
           selectedTrend={selectedTrend}
           onSelect={onTrendSelect}
+          onHover={onHover}
         />
       </RotatingGroup>
 

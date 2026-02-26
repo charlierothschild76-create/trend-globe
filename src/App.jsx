@@ -1,9 +1,36 @@
-import { useState, useMemo, Suspense } from 'react'
+import { useState, useMemo, Suspense, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
 import GlobeScene from './components/GlobeScene'
 import InfoPanel  from './components/InfoPanel'
 import Legend     from './components/Legend'
 import { useTrends } from './hooks/useTrends'
+import { CATEGORY_COLORS, CATEGORY_LABELS } from './utils/categoryDetector'
+import { formatVolume } from './utils/sphereUtils'
+
+function HoverTooltip({ tip }) {
+  const { trend, x, y } = tip
+  const color = CATEGORY_COLORS[trend.category] ?? '#ff6b35'
+  // Clamp so tooltip stays within viewport
+  const left = Math.min(Math.max(x, 90), window.innerWidth - 90)
+  const top  = y > 120 ? y : y + 20  // flip below cursor if near top
+  const transform = y > 120 ? 'translate(-50%, calc(-100% - 10px))' : 'translate(-50%, 10px)'
+  return (
+    <div
+      className="bubble-tooltip"
+      style={{ position: 'fixed', left, top, transform, pointerEvents: 'none', zIndex: 50 }}
+    >
+      <div className="tooltip-category" style={{ color }}>
+        {CATEGORY_LABELS[trend.category] ?? 'Other'} · {trend.source === 'google' ? 'Google Trends' : `r/${trend.subreddit ?? 'reddit'}`}
+      </div>
+      <div className="tooltip-title">{trend.title}</div>
+      <div className="tooltip-volume">
+        {trend.source === 'google' ? '🔍' : '⬆'} {formatVolume(trend.volume)}&nbsp;
+        {trend.source === 'google' ? 'searches' : 'upvotes'}
+      </div>
+      <div className="tooltip-geo">📍 {trend.geo.countryName}</div>
+    </div>
+  )
+}
 
 function LoadingScreen() {
   return (
@@ -18,6 +45,11 @@ export default function App() {
   const { trends, loading, error, lastUpdated, refetch } = useTrends()
   const [activeCategory, setActiveCategory] = useState(null)
   const [selectedTrend,  setSelectedTrend]  = useState(null)
+  const [hoveredTip, setHoveredTip] = useState(null) // { trend, x, y }
+
+  const handleHover = useCallback((trend, x, y) => {
+    setHoveredTip(trend ? { trend, x, y } : null)
+  }, [])
 
   // Per-category counts for the legend
   const trendCounts = useMemo(() => {
@@ -55,9 +87,15 @@ export default function App() {
             activeCategory={activeCategory}
             selectedTrend={selectedTrend}
             onTrendSelect={handleTrendSelect}
+            onHover={handleHover}
           />
         </Suspense>
       </Canvas>
+
+      {/* ── Hover Tooltip ──────────────────────────────────────────── */}
+      {hoveredTip && (
+        <HoverTooltip tip={hoveredTip} />
+      )}
 
       {/* ── UI Overlay ─────────────────────────────────────────────── */}
       {loading && trends.length === 0 ? (
