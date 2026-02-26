@@ -21,7 +21,7 @@ export function latLngToVector3(lat, lng, radius = 1) {
  * Map a trend volume (search hits / upvotes) to a bubble radius.
  * Uses logarithmic scaling so that very large numbers don't dominate.
  */
-export function normalizeBubbleSize(volume, minR = 0.012, maxR = 0.075) {
+export function normalizeBubbleSize(volume, minR = 0.007, maxR = 0.04) {
   const logVol = Math.log10(Math.max(volume, 100))   // clamp at 100
   const logMin = 2   // log10(100)
   const logMax = 6   // log10(1 000 000)

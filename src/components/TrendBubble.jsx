@@ -34,7 +34,7 @@ export default function TrendBubble({ trend, selected, onSelect }) {
     const hov   = hovered  ? 1.3 : 1.0
     const scale = baseSize * pulse * sel * hov
     meshRef.current.scale.setScalar(scale)
-    if (glowRef.current) glowRef.current.scale.setScalar(scale * 2.0)
+    if (glowRef.current) glowRef.current.scale.setScalar(scale * 1.6)
   })
 
   const handleOver  = useCallback((e) => { e.stopPropagation(); setHovered(true);  document.body.style.cursor = 'pointer' }, [])
