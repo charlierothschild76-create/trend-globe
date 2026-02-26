@@ -1,4 +1,6 @@
 {
+  "outputDirectory": "dist",
+  "buildCommand": "npm run build",
   "functions": {
     "api/*.js": {
       "maxDuration": 15,
