@@ -55,23 +55,25 @@ export default function TrendBubble({ trend, selected, onSelect, onHover }) {
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={selected ? 1.0 : hovered ? 0.7 : 0.4}
-          roughness={0.2}
-          metalness={0.1}
+          emissiveIntensity={selected ? 2.2 : hovered ? 1.6 : 0.9}
+          roughness={0.15}
+          metalness={0.05}
           transparent
-          opacity={0.92}
+          opacity={0.95}
+          toneMapped={false}
         />
       </mesh>
 
-      {/* Glow halo (additive blend, depth-write off) */}
+      {/* Glow halo — toneMapped=false so Bloom can pick it up */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 10, 10]} />
         <meshBasicMaterial
           color={color}
           transparent
-          opacity={0.18}
+          opacity={0.22}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
+          toneMapped={false}
         />
       </mesh>
 

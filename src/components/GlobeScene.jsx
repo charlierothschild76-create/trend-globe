@@ -1,8 +1,10 @@
 import { Suspense, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Stars, OrbitControls } from '@react-three/drei'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import Earth, { EarthFallback } from './Earth'
 import TrendBubbles from './TrendBubbles'
+import Atmosphere from './Atmosphere'
 
 function RotatingGroup({ children, paused }) {
   const groupRef = useRef()
@@ -35,6 +37,7 @@ export default function GlobeScene({ trends, activeCategory, selectedTrend, onTr
         <Suspense fallback={<EarthFallback />}>
           <Earth />
         </Suspense>
+        <Atmosphere />
         <TrendBubbles
           trends={trends}
           activeCategory={activeCategory}
@@ -56,6 +59,17 @@ export default function GlobeScene({ trends, activeCategory, selectedTrend, onTr
         onStart={() => setInteracting(true)}
         onEnd={()   => setInteracting(false)}
       />
+
+      {/* Post-processing: Bloom makes emissive materials glow */}
+      <EffectComposer>
+        <Bloom
+          mipmapBlur
+          luminanceThreshold={0.6}
+          luminanceSmoothing={0.8}
+          intensity={1.4}
+          radius={0.7}
+        />
+      </EffectComposer>
     </>
   )
 }

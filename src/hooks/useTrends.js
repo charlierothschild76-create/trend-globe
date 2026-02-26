@@ -22,9 +22,10 @@ export function useTrends() {
     setError(null)
 
     try {
-      const [gtRes, rdRes] = await Promise.allSettled([
+      const [gtRes, rdRes, hnRes] = await Promise.allSettled([
         fetch('/api/trends').then((r) => { if (!r.ok) throw new Error(r.status); return r.json() }),
         fetch('/api/reddit').then((r) => { if (!r.ok) throw new Error(r.status); return r.json() }),
+        fetch('/api/hackernews').then((r) => { if (!r.ok) throw new Error(r.status); return r.json() }),
       ])
 
       const all = []
@@ -34,6 +35,9 @@ export function useTrends() {
       }
       if (rdRes.status === 'fulfilled') {
         all.push(...normalize(rdRes.value.posts ?? []))
+      }
+      if (hnRes.status === 'fulfilled') {
+        all.push(...normalize(hnRes.value.posts ?? []))
       }
 
       if (all.length === 0) throw new Error('No trend data received')

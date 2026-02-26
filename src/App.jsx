@@ -20,12 +20,15 @@ function HoverTooltip({ tip }) {
       style={{ position: 'fixed', left, top, transform, pointerEvents: 'none', zIndex: 50 }}
     >
       <div className="tooltip-category" style={{ color }}>
-        {CATEGORY_LABELS[trend.category] ?? 'Other'} · {trend.source === 'google' ? 'Google Trends' : `r/${trend.subreddit ?? 'reddit'}`}
+        {CATEGORY_LABELS[trend.category] ?? 'Other'} · {
+          trend.source === 'google'      ? 'Google Trends'
+        : trend.source === 'hackernews' ? 'Hacker News'
+        : `r/${trend.subreddit ?? 'reddit'}`}
       </div>
       <div className="tooltip-title">{trend.title}</div>
       <div className="tooltip-volume">
-        {trend.source === 'google' ? '🔍' : '⬆'} {formatVolume(trend.volume)}&nbsp;
-        {trend.source === 'google' ? 'searches' : 'upvotes'}
+        {trend.source === 'google' ? '🔍' : trend.source === 'hackernews' ? '▲' : '⬆'} {formatVolume(trend.volume)}&nbsp;
+        {trend.source === 'google' ? 'searches' : 'points'}
       </div>
       <div className="tooltip-geo">📍 {trend.geo.countryName}</div>
     </div>

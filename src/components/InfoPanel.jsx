@@ -15,7 +15,9 @@ function TrendItem({ trend, selected, onSelect }) {
         <span className="trend-title">{trend.title}</span>
         <span className="trend-meta">
           <span className={`source-badge source-badge--${trend.source}`}>
-            {trend.source === 'google' ? '🔍 Google' : `⬆ r/${trend.subreddit ?? 'reddit'}`}
+            {trend.source === 'google'      ? '🔍 Google'
+            : trend.source === 'hackernews' ? '▲ HN'
+            : `⬆ r/${trend.subreddit ?? 'reddit'}`}
           </span>
           <span className="trend-volume">{formatVolume(trend.volume)}</span>
         </span>
@@ -44,7 +46,9 @@ function SelectedDetail({ trend, onClose }) {
         <div className="stat">
           <span className="stat-label">Source</span>
           <span className="stat-value">
-            {trend.source === 'google' ? 'Google Trends' : `Reddit · r/${trend.subreddit ?? 'all'}`}
+            {trend.source === 'google'      ? 'Google Trends'
+          : trend.source === 'hackernews' ? 'Hacker News'
+          : `Reddit · r/${trend.subreddit ?? 'all'}`}
           </span>
         </div>
         <div className="stat">

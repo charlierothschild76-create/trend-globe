@@ -292,6 +292,11 @@ body {
   color: #FF6534;
 }
 
+.source-badge--hackernews {
+  background: rgba(255, 102, 0, 0.18);
+  color: #ff6600;
+}
+
 .trend-volume {
   font-size: 0.7rem;
   color: var(--text-dim);
